@@ -1,36 +1,20 @@
-# FastAPI & Web Server
 fastapi==0.110.0
-uvicorn[standard]==0.28.0
-gunicorn==21.2.0
-
-# Pydantic (validation/settings)
+uvicorn==0.28.0
 pydantic==2.5.0
 pydantic-settings==2.1.0
-
-# Environment & Utilities
 python-dotenv==1.0.0
-setuptools==70.0.0
-wheel==0.43.0
 
-# HTTP Client
+transformers==4.38.0
+pillow==11.0.0
 httpx==0.26.0
-requests==2.31.0
-
-# AI/ML - OpenAI SDK
 openai==1.14.0
 
-# Image Processing
-pillow==11.0.0
-
-# Machine Learning Core Stack
-# CRITICAL: These versions work together on Python 3.11 with prebuilt wheels
-tensorflow==2.20.0
-numpy==1.24.3
-scipy==1.13.1
+tensorflow==2.14.0
+numpy==1.26.4
+scipy==1.11.4
 scikit-learn==1.4.2
 pandas==2.2.2
 
-# NLP - Transformers & PyTorch (lightweight)
-transformers==4.38.0
-torch==2.4.0
-tokenizers==0.15.0
+gunicorn==21.2.0
+setuptools==70.0.0
+wheel==0.43.0
