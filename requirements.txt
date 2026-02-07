@@ -6,6 +6,7 @@ python-dotenv==1.0.0
 transformers==4.35.2
 pillow==10.0.1
 httpx==0.24.1
+python-multipart==0.0.6
 openai==1.3.7
 tensorflow==2.12.0
 numpy==1.23.5
