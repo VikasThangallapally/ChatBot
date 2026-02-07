@@ -8,7 +8,7 @@ pillow==10.0.1
 httpx==0.24.1
 openai==1.3.7
 tensorflow==2.12.0
-numpy==1.24.3
+numpy==1.23.5
 scikit-learn==1.3.0
 pandas==2.0.3
 gunicorn==21.2.0
