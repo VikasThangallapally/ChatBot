@@ -45,7 +45,7 @@ class PredictionResponse(BaseModel):
     predictions: List[PredictionItem]
     top_prediction: Optional[TopPrediction] = None
     image_path: str
-    model_name: Optional[str] = None
+    model_version: Optional[str] = None
     status: str  # 'success', 'invalid_image', 'error'
     disclaimer: Optional[str] = None
     is_valid_brain_image: bool
@@ -90,7 +90,7 @@ class PredictionResponse(BaseModel):
                     "percentage": 85.0
                 },
                 "image_path": "app/static/uploads/mri_scan.jpg",
-                "model_name": "brain_tumor_model.h5",
+                "model_version": "brain_tumor_model.h5",
                 "status": "success",
                 "disclaimer": "MEDICAL DISCLAIMER: This AI system is for educational purposes only..."
             }
