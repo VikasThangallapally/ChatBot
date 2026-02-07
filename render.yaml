@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: brain-tumor-api
+    env: python
+    region: virginia
+    plan: free
+    pythonVersion: 3.10.13
+
+    # Build command: upgrade pip and build tools first to ensure wheels install cleanly
+    buildCommand: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+
+    # Start command
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+    # Environment variables
+    envVars:
+      - key: OPENAI_API_KEY
+        scope: build,runtime
+        sync: false
+      - key: PORT
+        value: 8000
+      - key: DEBUG
+        value: false
