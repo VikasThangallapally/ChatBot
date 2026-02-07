@@ -4,9 +4,12 @@ FastAPI application entry point for Brain Tumor Chatbot.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api.routes import predict, chat
 from app.utils.logger import get_logger
 import sys
+import os
+from pathlib import Path
 
 def _log_startup_info():
     try:
@@ -34,6 +37,14 @@ app.add_middleware(
 # Include routers
 app.include_router(predict.router, prefix="/api", tags=["Prediction"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
+
+# Mount static files (React frontend) if they exist
+frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
+if frontend_dist.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="static")
+    logger.info(f"Static files mounted from {frontend_dist}")
+else:
+    logger.warning(f"Frontend dist directory not found at {frontend_dist}. Only API will be available.")
 
 
 # Log Python/runtime info at startup (helps debug Render runtime)

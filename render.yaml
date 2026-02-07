@@ -1,16 +1,16 @@
 services:
-  # Backend API Service (FastAPI)
+  # Combined Backend API + Frontend Service (FastAPI + React)
   - type: web
-    name: brain-tumor-api
+    name: brain-tumor-detection
     env: python
     region: virginia
     plan: free
     pythonVersion: 3.11
 
-    # Build command: install dependencies
-    buildCommand: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+    # Build command: install Python deps and build React frontend
+    buildCommand: pip install -r requirements.txt && cd frontend && npm install && npm run build
 
-    # Start command
+    # Start command: serve both API and static files
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 
     # Environment variables
@@ -22,13 +22,3 @@ services:
         value: 8000
       - key: DEBUG
         value: false
-
-  # Frontend Service (React/Vite)
-  - type: static
-    name: brain-tumor-frontend
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://brain-tumor-api.onrender.com
-        scope: build

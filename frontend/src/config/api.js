@@ -9,8 +9,9 @@ export const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
   }
   
-  // For production - use the production API URL set during build
-  return import.meta.env.VITE_API_URL || 'https://brain-tumor-api.onrender.com'
+  // For production - use relative paths since frontend and backend are on same origin
+  // This works for both localhost and production deployment (e.g., Render.com)
+  return import.meta.env.VITE_API_URL || ''
 }
 
 export const API_BASE_URL = getApiBaseUrl()
