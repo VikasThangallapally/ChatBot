@@ -1,12 +1,13 @@
 services:
+  # Backend API Service (FastAPI)
   - type: web
     name: brain-tumor-api
     env: python
     region: virginia
     plan: free
-    pythonVersion: 3.10.13
+    pythonVersion: 3.11
 
-    # Build command: upgrade pip and build tools first to ensure wheels install cleanly
+    # Build command: install dependencies
     buildCommand: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
 
     # Start command
@@ -21,3 +22,13 @@ services:
         value: 8000
       - key: DEBUG
         value: false
+
+  # Frontend Service (React/Vite)
+  - type: static
+    name: brain-tumor-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://brain-tumor-api.onrender.com
+        scope: build
