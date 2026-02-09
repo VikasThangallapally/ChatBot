@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import { motion, AnimatePresence } from 'framer-motion'
 import Brain3D from './components/Brain3D'
 import UploadCard from './components/UploadCard'
@@ -6,7 +11,7 @@ import ResultPanel from './components/ResultPanel'
 import MedicalAnalysis from './components/MedicalAnalysis'
 import FloatingChatbot from './components/FloatingChatbot'
 
-export default function App(){
+function PredictionPage(){
   const [predictionResult, setPredictionResult] = useState(null)
   const [uploadedImage, setUploadedImage] = useState(null)
 
@@ -37,8 +42,9 @@ export default function App(){
           <h1 className="text-2xl font-semibold">Brain Tumor AI Assistant</h1>
           <p className="text-sm text-slate-300">AI-assisted MRI analysis & medical guidance</p>
         </div>
-        <nav>
+        <nav className="flex items-center gap-4">
           <button className="px-4 py-2 bg-neon/10 border border-neon text-neon rounded-lg hover:bg-neon/20 transition-colors">Upload MRI Scan</button>
+          <button onClick={()=> { localStorage.removeItem('token'); window.location.href='/login' }} className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-300 rounded-lg hover:bg-red-600/30 transition-colors text-sm">Logout</button>
         </nav>
       </header>
 
@@ -119,3 +125,24 @@ export default function App(){
     </div>
   )
 }
+
+function ProtectedRoute({ element }) {
+  const token = localStorage.getItem('token')
+  return token ? element : <Navigate to="/login" replace />
+}
+
+export default function App(){
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/prediction" element={<ProtectedRoute element={<PredictionPage />} />} />
+        <Route path="/" element={<Navigate to={localStorage.getItem('token') ? '/prediction' : '/login'} replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+

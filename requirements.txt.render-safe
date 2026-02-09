@@ -1,0 +1,54 @@
+# ==============================================================================
+# RENDER-SAFE REQUIREMENTS FOR FASTAPI + TRANSFORMERS + TENSORFLOW
+# ==============================================================================
+# Python: 3.11.9 (use in runtime.txt)
+# Platform: Render Linux (x86_64)
+# All versions pinned to ensure prebuilt wheels exist
+# ==============================================================================
+
+# FastAPI & Web Server
+fastapi==0.110.0
+uvicorn[standard]==0.28.0
+gunicorn==21.2.0
+
+# Pydantic (validation/settings)
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Environment & Utilities
+python-dotenv==1.0.0
+setuptools==70.0.0
+wheel==0.43.0
+
+# HTTP Client
+httpx==0.26.0
+requests==2.31.0
+
+# AI/ML - OpenAI SDK
+openai==1.14.0
+
+# Image Processing
+pillow==11.0.0
+
+# Machine Learning Core Stack
+# CRITICAL: These versions work together on Python 3.11.9 with prebuilt wheels
+tensorflow==2.20.0
+numpy==1.24.3
+scipy==1.13.1
+scikit-learn==1.4.2
+pandas==2.2.2
+
+# NLP - Transformers & PyTorch (lightweight)
+transformers==4.38.0
+torch==2.4.0
+tokenizers==0.15.0
+
+# ==============================================================================
+# NOTES FOR RENDER DEPLOYMENT:
+# ==============================================================================
+# 1. Use runtime.txt: python-3.11.9
+# 2. Use buildCommand: pip install -r requirements.txt
+# 3. Use startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# 4. All packages have prebuilt wheels (manylinux1/manylinux2014) for Linux
+# 5. No compilation needed - pure binary installation
+# ==============================================================================

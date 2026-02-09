@@ -20,8 +20,11 @@ export default function UploadCard(){
       setProgress(0)
       console.log('API_BASE_URL:', API_BASE_URL)
       console.log('Uploading file:', file.name)
+      const token = localStorage.getItem('token')
+      const headers = { 'Content-Type': 'multipart/form-data' }
+      if(token) headers['Authorization'] = `Bearer ${token}`
       const res = await axios.post(`${API_BASE_URL}/api/predict`, form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers,
         onUploadProgress: (e)=>{
           setProgress(Math.round((e.loaded / e.total) * 100))
         }

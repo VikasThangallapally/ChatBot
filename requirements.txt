@@ -16,3 +16,8 @@ gunicorn==21.2.0
 setuptools==68.2.2
 wheel==0.41.2
 requests==2.31.0
+passlib==1.7.4
+bcrypt==4.0.1
+python-jose[cryptography]==3.3.0
+supabase==2.8.0
+sendgrid==6.11.0

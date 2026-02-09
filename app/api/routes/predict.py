@@ -3,7 +3,6 @@ Image prediction endpoint for brain tumor MRI analysis.
 Includes MRI image validation before running predictions.
 """
 
-import os
 from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
 from PIL import Image
 from io import BytesIO
@@ -13,7 +12,9 @@ from app.core.disclaimer import get_disclaimer
 from app.dependencies import get_model_loader
 from app.core.model_loader import ModelLoader
 from app.config import settings
+from app.core.auth import get_current_user
 from app.utils.logger import get_logger
+import os
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -27,7 +28,8 @@ router = APIRouter()
 )
 async def predict(
     file: UploadFile = File(...),
-    model_loader: ModelLoader = Depends(get_model_loader)
+    model_loader: ModelLoader = Depends(get_model_loader),
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Predict brain tumor presence from MRI image.

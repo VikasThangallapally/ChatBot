@@ -1,11 +1,7 @@
-"""
-FastAPI application entry point for Brain Tumor Chatbot.
-"""
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api.routes import predict, chat
+from app.api.routes import predict, chat, auth
 from app.utils.logger import get_logger
 import sys
 import os
@@ -37,6 +33,7 @@ app.add_middleware(
 # Include routers
 app.include_router(predict.router, prefix="/api", tags=["Prediction"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
+app.include_router(auth.router, prefix="/api", tags=["Auth"])
 
 # Mount static files (React frontend) if they exist
 frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
