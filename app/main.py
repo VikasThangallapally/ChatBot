@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api.routes import predict, chat, auth
+from app.api.routes import predict, chat, auth, status
 from app.utils.logger import get_logger
 import sys
 import os
@@ -34,6 +34,7 @@ app.add_middleware(
 app.include_router(predict.router, prefix="/api", tags=["Prediction"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
+app.include_router(status.router, prefix="", tags=["Status"])
 
 # Mount static files (React frontend) if they exist
 frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
