@@ -22,17 +22,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Initialize MongoDB collections on startup
+# Initialize MongoDB collections on startup (non-blocking)
 @app.on_event("startup")
 async def startup_event():
-    """Initialize MongoDB collections and indexes."""
+    """Initialize MongoDB collections and indexes (non-blocking)."""
     try:
         init_collections()
-        logger.info("✅ MongoDB collections initialized successfully")
+        logger.info("✅ MongoDB collections initialized")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize MongoDB collections: {e}")
-        # Don't crash the app, but log the error
-        raise
+        logger.warning(f"⚠️  MongoDB initialization warning (will retry on first use): {e}")
+        # Don't crash the app - MongoDB will connect lazily on first database operation
 
 
 @app.on_event("shutdown")
