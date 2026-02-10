@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
@@ -12,6 +12,7 @@ import MedicalAnalysis from './components/MedicalAnalysis'
 import FloatingChatbot from './components/FloatingChatbot'
 
 function PredictionPage(){
+  const navigate = useNavigate()
   const [predictionResult, setPredictionResult] = useState(null)
   const [uploadedImage, setUploadedImage] = useState(null)
 
@@ -44,7 +45,7 @@ function PredictionPage(){
         </div>
         <nav className="flex items-center gap-4">
           <button className="px-4 py-2 bg-neon/10 border border-neon text-neon rounded-lg hover:bg-neon/20 transition-colors">Upload MRI Scan</button>
-          <button onClick={()=> { localStorage.removeItem('token'); window.location.href='/login' }} className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-300 rounded-lg hover:bg-red-600/30 transition-colors text-sm">Logout</button>
+          <button onClick={() => { localStorage.removeItem('token'); navigate('/login') }} className="px-4 py-2 bg-red-600/20 border border-red-600 text-red-300 rounded-lg hover:bg-red-600/30 transition-colors text-sm">Logout</button>
         </nav>
       </header>
 
