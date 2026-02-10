@@ -156,11 +156,16 @@ async def reset_password(request: ResetPasswordRequest):
         # Check if OTP has expired
         expires_at = otp_record.get("expires_at")
         now_utc = datetime.now(timezone.utc)
-        
+
+        # Normalize expires_at to an aware UTC datetime for safe comparison
         if isinstance(expires_at, str):
             # Parse string timestamp if stored as string
             expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
-        
+        if isinstance(expires_at, datetime):
+            if expires_at.tzinfo is None:
+                # Assume stored as UTC without tzinfo (common from pymongo), make it aware
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+
         logger.debug(f"OTP expires_at={expires_at.isoformat()} now_utc={now_utc.isoformat()}")
         if now_utc > expires_at:
             raise HTTPException(status_code=400, detail="OTP has expired. Request a new one.")
