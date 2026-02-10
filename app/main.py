@@ -30,31 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Include routers (BEFORE static files)
 app.include_router(predict.router, prefix="/api", tags=["Prediction"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(status.router, prefix="", tags=["Status"])
 
-# Mount static files (React frontend) if they exist
-frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
-if frontend_dist.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="static")
-    logger.info(f"Static files mounted from {frontend_dist}")
-else:
-    logger.warning(f"Frontend dist directory not found at {frontend_dist}. Only API will be available.")
-
-
-# Log Python/runtime info at startup (helps debug Render runtime)
-_log_startup_info()
-
-
-@app.get("/", tags=["Health"])
-async def root():
-    """Health check endpoint."""
-    return {"message": "Brain Tumor Chatbot API is running"}
-
-
+# Health check endpoint (before static files mount)
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Detailed health check endpoint."""
@@ -63,6 +45,14 @@ async def health_check():
         "service": "Brain Tumor Chatbot",
         "version": "1.0.0"
     }
+
+# Mount static files (React frontend) LAST - this must be last so it doesn't interfere with API routes
+frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
+if frontend_dist.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="static")
+    logger.info(f"Static files mounted from {frontend_dist}")
+else:
+    logger.warning(f"Frontend dist directory not found at {frontend_dist}. Only API will be available.")
 
 
 if __name__ == "__main__":
