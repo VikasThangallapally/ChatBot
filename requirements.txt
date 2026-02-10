@@ -2,6 +2,7 @@
 uvicorn[standard]==0.28.0
 pydantic==2.5.0
 pydantic-settings==2.1.0
+email-validator==2.1.0
 python-dotenv==1.0.0
 transformers==4.35.2
 pillow==10.0.1
