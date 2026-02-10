@@ -14,6 +14,7 @@ gunicorn==21.2.0
 # Pydantic (validation/settings)
 pydantic==2.5.0
 pydantic-settings==2.1.0
+email-validator==2.1.0
 
 # Environment & Utilities
 python-dotenv==1.0.0

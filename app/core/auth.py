@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.config import settings
-from app.db import supabase
+from app.db import get_users_collection
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,11 +40,14 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def get_user_by_email(email: str) -> Optional[dict]:
-    """Fetch user by email from Supabase."""
+    """Fetch user by email from MongoDB."""
     try:
-        response = supabase.table("users").select("*").eq("email", email).execute()
-        if response.data and len(response.data) > 0:
-            return response.data[0]
+        users = get_users_collection()
+        user = users.find_one({"email": email})
+        if user:
+            # Convert ObjectId to string for serialization
+            user["id"] = str(user.get("_id", ""))
+            return user
     except Exception as e:
         logger.error(f"Error fetching user by email: {e}")
     return None

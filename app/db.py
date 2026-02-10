@@ -1,38 +1,81 @@
-from supabase import create_client, Client
+"""
+MongoDB database client and initialization.
+"""
+
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
 
-_supabase_client: Client = None
+_mongo_client = None
+_mongo_db = None
 
 
-def get_supabase_client() -> Client:
-    """Get or create Supabase client (lazy initialization)."""
-    global _supabase_client
-    if _supabase_client is None:
+def get_mongo_client():
+    """Get or create MongoDB client."""
+    global _mongo_client
+    if _mongo_client is None:
         try:
-            # Create client without any extra parameters
-            _supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
-            logger.info("✅ Supabase client initialized successfully")
-        except TypeError as e:
-            # Handle proxy parameter error from newer supabase versions
-            if "proxy" in str(e):
-                logger.error(f"❌ Supabase proxy parameter error: {e}")
-                logger.error("⚠️  Try updating supabase package: pip install --upgrade supabase")
+            _mongo_client = MongoClient(settings.MONGO_URI, serverSelectionTimeoutMS=5000)
+            # Verify connection
+            _mongo_client.admin.command('ping')
+            logger.info("✅ MongoDB client connected successfully")
+        except (ConnectionFailure, ServerSelectionTimeoutError) as e:
+            logger.error(f"❌ Failed to connect to MongoDB: {e}")
             raise
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Supabase client: {e}")
-            logger.error("⚠️  Backend will run but database operations may fail.")
+            logger.error(f"❌ Unexpected MongoDB error: {e}")
             raise
-    return _supabase_client
+    return _mongo_client
 
 
-class SupabaseProxy:
-    """Proxy to get supabase client on demand."""
-    def __getattr__(self, name):
-        return getattr(get_supabase_client(), name)
+def get_mongo_db():
+    """Get MongoDB database instance."""
+    global _mongo_db
+    if _mongo_db is None:
+        client = get_mongo_client()
+        _mongo_db = client[settings.MONGO_DB_NAME]
+        logger.info(f"✅ Using MongoDB database: {settings.MONGO_DB_NAME}")
+    return _mongo_db
 
 
-# Create singleton instance for global use
-supabase = SupabaseProxy()
+def close_mongo_connection():
+    """Close MongoDB connection."""
+    global _mongo_client
+    if _mongo_client is not None:
+        _mongo_client.close()
+        _mongo_client = None
+        logger.info("MongoDB connection closed")
+
+
+# Convenience function to get users collection
+def get_users_collection():
+    """Get users collection."""
+    db = get_mongo_db()
+    return db["users"]
+
+
+def get_password_reset_otps_collection():
+    """Get password reset OTPs collection."""
+    db = get_mongo_db()
+    return db["password_reset_otps"]
+
+
+# Initialize collections with indexes on startup
+def init_collections():
+    """Initialize MongoDB collections with required indexes."""
+    try:
+        users = get_users_collection()
+        # Create unique index on email
+        users.create_index("email", unique=True)
+        logger.info("✅ Users collection initialized with indexes")
+        
+        otps = get_password_reset_otps_collection()
+        # Create index for automatic expiration of OTPs
+        otps.create_index("expires_at", expireAfterSeconds=0)
+        logger.info("✅ Password reset OTPs collection initialized with TTL index")
+    except Exception as e:
+        logger.error(f"❌ Error initializing collections: {e}")
+        raise

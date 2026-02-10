@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api.routes import predict, chat, auth, status
 from app.utils.logger import get_logger
+from app.db import init_collections, close_mongo_connection
 import sys
 import os
 from pathlib import Path
@@ -20,6 +21,28 @@ app = FastAPI(
     description="AI-powered chatbot for brain tumor MRI image analysis and explanation",
     version="1.0.0"
 )
+
+# Initialize MongoDB collections on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize MongoDB collections and indexes."""
+    try:
+        init_collections()
+        logger.info("✅ MongoDB collections initialized successfully")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize MongoDB collections: {e}")
+        # Don't crash the app, but log the error
+        raise
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close MongoDB connection on shutdown."""
+    try:
+        close_mongo_connection()
+        logger.info("✅ MongoDB connection closed")
+    except Exception as e:
+        logger.error(f"❌ Error closing MongoDB connection: {e}")
 
 # CORS middleware
 app.add_middleware(

@@ -4,9 +4,10 @@ from app.schemas.user import UserCreate, UserLogin, UserOut
 from app.schemas.password_reset import ForgotPasswordRequest, ResetPasswordRequest, PasswordResetResponse
 from app.core.auth import get_password_hash, create_access_token, authenticate_user, get_current_user, get_user_by_email
 from app.config import settings
-from app.db import supabase
+from app.db import get_users_collection, get_password_reset_otps_collection
 from app.utils.logger import get_logger
 from app.services.email_service import send_otp_email
+from bson.objectid import ObjectId
 import logging
 import random
 import string
@@ -17,22 +18,24 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserOut, summary="Register new user")
 async def register(user_in: UserCreate):
-    """Register a new user in Supabase."""
+    """Register a new user in MongoDB."""
     try:
-        existing = get_user_by_email(user_in.email)
+        users = get_users_collection()
+        existing = users.find_one({"email": user_in.email})
         if existing:
             raise HTTPException(status_code=400, detail="Email already registered")
         
-        # Insert user into Supabase
-        response = supabase.table("users").insert({
+        # Insert user into MongoDB
+        user_doc = {
             "name": user_in.name,
             "email": user_in.email,
-            "password_hash": get_password_hash(user_in.password)
-        }).execute()
+            "password_hash": get_password_hash(user_in.password),
+            "created_at": datetime.now(timezone.utc)
+        }
+        result = users.insert_one(user_doc)
         
-        if response.data and len(response.data) > 0:
-            user = response.data[0]
-            return UserOut(id=user["id"], name=user["name"], email=user["email"])
+        if result.inserted_id:
+            return UserOut(id=str(result.inserted_id), name=user_in.name, email=user_in.email)
         else:
             raise HTTPException(status_code=500, detail="Failed to create user in database")
     except HTTPException:
@@ -66,8 +69,11 @@ async def forgot_password(request: ForgotPasswordRequest):
     OTP expires in 10 minutes.
     """
     try:
+        users = get_users_collection()
+        otps = get_password_reset_otps_collection()
+        
         # Verify user exists
-        user = get_user_by_email(request.email)
+        user = users.find_one({"email": request.email})
         if not user:
             # Don't reveal whether email exists for security
             raise HTTPException(status_code=400, detail="If this email exists, you will receive an OTP shortly")
@@ -80,15 +86,17 @@ async def forgot_password(request: ForgotPasswordRequest):
         from datetime import timedelta as td
         expiry_time = expiry_time + td(minutes=10)
         
-        # Store OTP in Supabase
-        response = supabase.table("password_reset_otps").insert({
+        # Store OTP in MongoDB
+        otp_doc = {
             "user_email": request.email,
             "otp_code": otp_code,
-            "expires_at": expiry_time.isoformat(),
-            "is_used": False
-        }).execute()
+            "expires_at": expiry_time,
+            "is_used": False,
+            "created_at": datetime.now(timezone.utc)
+        }
+        result = otps.insert_one(otp_doc)
         
-        if not response.data:
+        if not result.inserted_id:
             raise HTTPException(status_code=500, detail="Failed to generate OTP")
         
         # Send OTP via email
@@ -118,62 +126,57 @@ async def reset_password(request: ResetPasswordRequest):
     Verifies OTP is valid, not expired, and not already used.
     """
     try:
+        users = get_users_collection()
+        otps = get_password_reset_otps_collection()
+        
         # Verify user exists
-        user = get_user_by_email(request.email)
+        user = users.find_one({"email": request.email})
         if not user:
             raise HTTPException(status_code=400, detail="User not found")
         
-        # Fetch the OTP record
-        otp_response = supabase.table("password_reset_otps").select("*").eq(
-            "user_email", request.email
-        ).eq("is_used", False).order("created_at", desc=True).limit(1).execute()
+        # Fetch the OTP record - get the most recent unused OTP
+        otp_record = otps.find_one({
+            "user_email": request.email,
+            "is_used": False
+        }, sort=[("created_at", -1)])
         
-        if not otp_response.data or len(otp_response.data) == 0:
+        if not otp_record:
             raise HTTPException(status_code=400, detail="No active OTP found. Request a new one.")
-        
-        otp_record = otp_response.data[0]
         
         # Verify OTP code matches
         if otp_record["otp_code"] != request.otp_code:
             raise HTTPException(status_code=400, detail="Invalid OTP code")
         
-        # Check if OTP has expired. Parse stored ISO timestamp and compare using timezone-aware datetimes
-        expires_at_raw = otp_record.get("expires_at")
-        try:
-            # Normalize 'Z' to +00:00 then parse
-            expires_at = datetime.fromisoformat(expires_at_raw.replace('Z', '+00:00'))
-        except Exception:
-            # Fallback: treat as naive UTC
-            expires_at = datetime.fromisoformat(expires_at_raw)
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
-
+        # Check if OTP has expired
+        expires_at = otp_record.get("expires_at")
         now_utc = datetime.now(timezone.utc)
+        
+        if isinstance(expires_at, str):
+            # Parse string timestamp if stored as string
+            expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+        
         logger.debug(f"OTP expires_at={expires_at.isoformat()} now_utc={now_utc.isoformat()}")
         if now_utc > expires_at:
             raise HTTPException(status_code=400, detail="OTP has expired. Request a new one.")
         
         # Verify OTP hasn't been used
-        if otp_record["is_used"]:
+        if otp_record.get("is_used", False):
             raise HTTPException(status_code=400, detail="This OTP has already been used")
         
         # Hash new password
         new_password_hash = get_password_hash(request.new_password)
         
-        # Update user password in users table
-        # Update only the password hash. Some Supabase projects may not have
-        # an `updated_at` column in the `users` table; avoid updating it to
-        # prevent PGRST204 schema errors.
-        update_response = supabase.table("users").update({
-            "password_hash": new_password_hash
-        }).eq("email", request.email).execute()
-        
-        if not update_response.data:
-            raise HTTPException(status_code=500, detail="Failed to update password")
+        # Update user password in MongoDB
+        users.update_one(
+            {"email": request.email},
+            {"$set": {"password_hash": new_password_hash, "updated_at": datetime.now(timezone.utc)}}
+        )
         
         # Mark OTP as used
-        supabase.table("password_reset_otps").update({
-            "is_used": True
-        }).eq("id", otp_record["id"]).execute()
+        otps.update_one(
+            {"_id": otp_record["_id"]},
+            {"$set": {"is_used": True}}
+        )
         
         logger.info(f"✅ Password reset successfully for {request.email}")
         return PasswordResetResponse(

@@ -32,9 +32,9 @@ class Settings:
     # Model confidence threshold
     CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.5"))
 
-    # Supabase
-    SUPABASE_URL = os.getenv("SUPABASE_URL", "https://uluxzbfstcemaprjhyjl.supabase.co")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsdXh6YmZzdGNlbWFwcmpoeWpsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDY0MjAwNiwiZXhwIjoyMDg2MjE4MDA2fQ.e8nHKwZjQzr4z-FtuyDxqPNAfkLoOhIVdIBlUsQss60")
+    # MongoDB
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://vikasthangallapally8380_db_user:yfPPWUjpgcI8CUvc@vikas1.rapgqvu.mongodb.net/?appName=vikas1")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "neuro_assist")
 
     # Auth / JWT
     SECRET_KEY = os.getenv("SECRET_KEY", "ae9d1e30-5bf2-423a-954c-13c8c759452a")
