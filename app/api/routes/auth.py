@@ -56,6 +56,12 @@ async def login(form_data: UserLogin):
     return {"message": "Login successful", "access_token": access_token, "token_type": "bearer"}
 
 
+@router.post("/logout")
+async def logout():
+    """Logout user (client-side token clearing)."""
+    return {"message": "Logout successful", "status": "success"}
+
+
 @router.get("/me", response_model=UserOut)
 async def me(current_user: dict = Depends(get_current_user)):
     """Get current authenticated user."""
