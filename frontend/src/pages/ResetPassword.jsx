@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { API_BASE_URL } from '../config/api'
 
 export default function ResetPassword() {
@@ -175,9 +175,9 @@ export default function ResetPassword() {
         <div className="mt-6 text-center">
           <p className="text-slate-400 text-sm">
             Didn't receive an OTP?{' '}
-            <a href="/forgot-password" className="text-cyan-400 hover:text-cyan-300 font-semibold">
+            <Link to="/forgot-password" className="text-cyan-400 hover:text-cyan-300 font-semibold">
               Request another one
-            </a>
+            </Link>
           </p>
         </div>
 

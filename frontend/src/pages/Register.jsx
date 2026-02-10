@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { API_BASE_URL } from '../config/api'
 
 export default function Register(){
@@ -44,7 +44,7 @@ export default function Register(){
           </div>
           <div className="flex items-center justify-between">
             <button type="submit" className="px-4 py-2 bg-neon/10 border border-neon text-neon rounded-lg">Create account</button>
-            <a href="/login" className="text-sm text-slate-300">Already have an account?</a>
+            <Link to="/login" className="text-sm text-slate-300">Already have an account?</Link>
           </div>
         </form>
       </div>

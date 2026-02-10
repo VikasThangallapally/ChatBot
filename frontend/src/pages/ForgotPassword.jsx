@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { API_BASE_URL } from '../config/api'
 
 export default function ForgotPassword() {
@@ -73,9 +73,9 @@ export default function ForgotPassword() {
             <div className="mt-6 text-center">
               <p className="text-slate-400 text-sm">
                 Remember your password?{' '}
-                <a href="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
+                <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
                   Back to Login
-                </a>
+                </Link>
               </p>
             </div>
           </>
