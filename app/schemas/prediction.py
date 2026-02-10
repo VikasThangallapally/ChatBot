@@ -2,7 +2,7 @@
 Pydantic schemas for prediction requests and responses.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 
@@ -42,19 +42,8 @@ class BrainImageValidation(BaseModel):
 
 class PredictionResponse(BaseModel):
     """Response schema for prediction endpoint."""
-    predictions: List[PredictionItem]
-    top_prediction: Optional[TopPrediction] = None
-    image_path: str
-    model_version: Optional[str] = None
-    status: str  # 'success', 'invalid_image', 'error'
-    disclaimer: Optional[str] = None
-    is_valid_brain_image: bool
-    image_validation_confidence: float
-    validation_reason: Optional[str] = None
-    error: Optional[str] = None
-    medical_analysis: Optional[MedicalAnalysis] = None
-    
-    class Config:
+    model_config = ConfigDict(
+        protected_namespaces=(),
         json_schema_extra = {
             "example": {
                 "predictions": [
@@ -95,3 +84,16 @@ class PredictionResponse(BaseModel):
                 "disclaimer": "MEDICAL DISCLAIMER: This AI system is for educational purposes only..."
             }
         }
+    )
+    
+    predictions: List[PredictionItem]
+    top_prediction: Optional[TopPrediction] = None
+    image_path: str
+    model_version: Optional[str] = None
+    status: str  # 'success', 'invalid_image', 'error'
+    disclaimer: Optional[str] = None
+    is_valid_brain_image: bool
+    image_validation_confidence: float
+    validation_reason: Optional[str] = None
+    error: Optional[str] = None
+    medical_analysis: Optional[MedicalAnalysis] = None
