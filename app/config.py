@@ -32,7 +32,7 @@ class Settings:
     # Model confidence threshold
     CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.5"))
 
-    # MongoDB
+    # MongoDB Atlas
     MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://vikasthangallapally8380_db_user:yfPPWUjpgcI8CUvc@vikas1.rapgqvu.mongodb.net/?appName=vikas1")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "neuro_assist")
 
@@ -44,6 +44,16 @@ class Settings:
     # Email / SendGrid Configuration (for password reset OTPs)
     SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
     SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "")
+
+    # Backend URL for serving static files with absolute URLs
+    # Example: https://brain-tumor-api.onrender.com
+    BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+    
+    # CORS allowed origins (comma-separated)
+    # Example: http://localhost:3000,http://localhost:5174,https://my-netlify-app.netlify.app
+    CORS_ORIGINS = [
+        origin.strip() for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5174").split(",")
+    ]
 
 
 settings = Settings()

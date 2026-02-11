@@ -20,6 +20,22 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
+def get_absolute_image_url(file_path: str) -> str:
+    """
+    Convert local file path to absolute URL with full backend domain.
+    Example: app/static/uploads/image.jpg -> https://backend.onrender.com/static/uploads/image.jpg
+    """
+    # Extract relative path from uploads directory
+    if settings.UPLOAD_DIR in file_path:
+        relative_path = file_path.replace(settings.UPLOAD_DIR, "").lstrip("/\\")
+    else:
+        relative_path = os.path.basename(file_path)
+    
+    # Construct absolute URL with BACKEND_URL
+    absolute_url = f"{settings.BACKEND_URL.rstrip('/')}/static/{relative_path}"
+    return absolute_url
+
+
 @router.post(
     "/predict",
     response_model=PredictionResponse,
@@ -64,6 +80,9 @@ async def predict(
         with open(file_path, "wb") as f:
             f.write(file_contents)
         
+        # Get absolute URL for the image
+        image_url = get_absolute_image_url(file_path)
+        
         # Load image for validation
         try:
             image = Image.open(BytesIO(file_contents))
@@ -72,7 +91,7 @@ async def predict(
             return {
                 "predictions": [],
                 "top_prediction": None,
-                "image_path": file_path,
+                "image_path": image_url,
                 "model_version": None,
                 "status": "invalid_image",
                 "disclaimer": "⚠️ INVALID IMAGE: Could not read the uploaded file. Please ensure it's a valid image file (JPEG, PNG, etc.)",
@@ -93,7 +112,7 @@ async def predict(
             return {
                 "predictions": [],
                 "top_prediction": None,
-                "image_path": file_path,
+                "image_path": image_url,
                 "model_version": None,
                 "status": "invalid_image",
                 "disclaimer": "⚠️ INVALID IMAGE: The uploaded file does not appear to be a valid brain MRI scan. Please upload a brain MRI image in JPEG, PNG, or DICOM format.",
@@ -105,6 +124,9 @@ async def predict(
         
         # Image is valid MRI - run model prediction
         prediction = await inference_service.predict_image(file_path)
+        
+        # Replace local file path with absolute URL
+        prediction["image_path"] = image_url
         
         # Add disclaimer for successful predictions
         if prediction.get("is_valid_brain_image", False) and prediction.get("status") == "success":

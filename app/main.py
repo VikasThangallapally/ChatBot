@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes import predict, chat, auth, status
 from app.utils.logger import get_logger
 from app.db import init_collections, close_mongo_connection
+from app.config import settings
 import sys
 import os
 from pathlib import Path
@@ -43,10 +44,10 @@ async def shutdown_event():
     except Exception as e:
         logger.error(f"❌ Error closing MongoDB connection: {e}")
 
-# CORS middleware
+# CORS middleware - configured from environment variables
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,15 +69,21 @@ async def health_check():
         "version": "1.0.0"
     }
 
-# Mount static files (React frontend) LAST - this must be last so it doesn't interfere with API routes
+# Mount static files for uploaded images and heatmaps
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+app.mount("/static", StaticFiles(directory=settings.UPLOAD_DIR), name="static")
+logger.info(f"Static files mounted from {settings.UPLOAD_DIR}")
+
+# Mount React frontend static files LAST - this must be last so it doesn't interfere with API routes
 frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
 if frontend_dist.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="static")
-    logger.info(f"Static files mounted from {frontend_dist}")
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
+    logger.info(f"Frontend static files mounted from {frontend_dist}")
 else:
     logger.warning(f"Frontend dist directory not found at {frontend_dist}. Only API will be available.")
 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
