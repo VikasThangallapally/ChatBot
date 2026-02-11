@@ -19,18 +19,18 @@ export default function MedicalAnalysis({ result }) {
       className="space-y-4 col-span-2"
     >
       {/* About Result */}
-      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)]">
+      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
         <h5 className="text-md font-semibold mb-3 flex items-center gap-2">
-          <span className="text-neon">📋</span> About This Result
+          <span className="text-cyan-400">📋</span> About This Result
         </h5>
         <p className="text-sm text-slate-300 leading-relaxed">{data.aboutResult}</p>
       </div>
 
       {/* Symptoms / Effects */}
       {data.symptoms.length > 0 && (
-        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)]">
+        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
           <h5 className="text-md font-semibold mb-3 flex items-center gap-2">
-            <span className="text-neon">⚕️</span> Possible Symptoms & Effects
+            <span className="text-cyan-400">⚕️</span> Possible Symptoms & Effects
           </h5>
           <ul className="space-y-2">
             {data.symptoms.map((symptom, idx) => (
@@ -47,15 +47,15 @@ export default function MedicalAnalysis({ result }) {
       )}
 
       {/* Medical Consultation */}
-      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)]">
+      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
         <h5 className="text-md font-semibold mb-3 flex items-center gap-2">
-          <span className="text-neon">👨‍⚕️</span> Medical Consultation
+          <span className="text-cyan-400">👨‍⚕️</span> Medical Consultation
         </h5>
         <p className="text-sm text-slate-300 mb-4">Consider consulting with these specialists:</p>
         <div className="space-y-2">
           {data.specialists.map((specialist, idx) => (
-            <div key={idx} className="text-sm text-slate-300 flex gap-3 p-2 bg-[rgba(0,230,255,0.05)] rounded">
-              <span className="text-neon min-w-fit">→</span>
+            <div key={idx} className="text-sm text-slate-300 flex gap-3 p-2 bg-cyan-500/10 rounded border border-cyan-500/20">
+              <span className="text-cyan-400 min-w-fit">→</span>
               <span>{specialist}</span>
             </div>
           ))}
@@ -63,9 +63,9 @@ export default function MedicalAnalysis({ result }) {
       </div>
 
       {/* Lifestyle & Diet */}
-      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)]">
+      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
         <h5 className="text-md font-semibold mb-3 flex items-center gap-2">
-          <span className="text-neon">🏥</span> Lifestyle & General Health
+          <span className="text-cyan-400">🏥</span> Lifestyle & General Health
         </h5>
         <ul className="space-y-2">
           {data.lifestyle.map((item, idx) => (
@@ -81,9 +81,9 @@ export default function MedicalAnalysis({ result }) {
       </div>
 
       {/* Monitoring & Next Steps */}
-      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)]">
+      <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
         <h5 className="text-md font-semibold mb-3 flex items-center gap-2">
-          <span className="text-neon">📊</span> Monitoring & Next Steps
+          <span className="text-cyan-400">📊</span> Monitoring & Next Steps
         </h5>
         <ul className="space-y-2">
           {data.monitoring.map((step, idx) => (

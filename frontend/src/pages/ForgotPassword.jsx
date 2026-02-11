@@ -29,8 +29,35 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#061018] via-[#0a1929] to-[#061018] text-white">
-      <div className="w-full max-w-md p-8 rounded-xl bg-[rgba(255,255,255,0.03)] backdrop-blur-sm border border-[rgba(255,255,255,0.1)]">
+    <div className="min-h-screen flex items-center justify-center bg-[#061018] text-white relative overflow-hidden">
+      {/* Animated background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Animated grid background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-cyan-500/10 animate-gradient-shift"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)',
+            backgroundSize: '50px 50px',
+            animation: 'grid-flow 20s linear infinite'
+          }}></div>
+        </div>
+
+        {/* Gradient orbs with smooth floating animation */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-float" style={{animationDuration: '8s', animationDelay: '0s'}}></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-float" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-float" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
+        
+        {/* Floating particles with glow */}
+        <div className="absolute top-20 left-20 w-3 h-3 bg-blue-400 rounded-full animate-float-particle shadow-lg shadow-blue-400/50" style={{animationDuration: '6s'}}></div>
+        <div className="absolute top-40 right-32 w-4 h-4 bg-cyan-400 rounded-full animate-float-particle shadow-lg shadow-cyan-400/50" style={{animationDuration: '8s', animationDelay: '1s'}}></div>
+        <div className="absolute bottom-32 left-40 w-3 h-3 bg-indigo-400 rounded-full animate-float-particle shadow-lg shadow-indigo-400/50" style={{animationDuration: '7s', animationDelay: '2s'}}></div>
+        
+        {/* Rotating rings */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 border border-blue-500/10 rounded-full animate-spin-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 border border-cyan-500/10 rounded-full animate-spin-reverse"></div>
+      </div>
+
+      <div className="w-full max-w-md p-8 rounded-xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg shadow-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 relative z-10">
         
         {!showOtpStep ? (
           <>
@@ -111,6 +138,51 @@ export default function ForgotPassword() {
         )}
 
       </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -30px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        @keyframes float-particle {
+          0%, 100% { transform: translate(0, 0); opacity: 1; }
+          25% { transform: translate(20px, -40px); opacity: 0.8; }
+          50% { transform: translate(-30px, -80px); opacity: 0.6; }
+          75% { transform: translate(40px, -40px); opacity: 0.8; }
+        }
+        @keyframes grid-flow {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
+        }
+        @keyframes gradient-shift {
+          0%, 100% { transform: rotate(0deg) scale(1); opacity: 1; }
+          50% { transform: rotate(180deg) scale(1.2); opacity: 0.8; }
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        .animate-float {
+          animation: float 8s ease-in-out infinite;
+        }
+        .animate-float-particle {
+          animation: float-particle 6s ease-in-out infinite;
+        }
+        .animate-gradient-shift {
+          animation: gradient-shift 15s ease-in-out infinite;
+        }
+        .animate-spin-slow {
+          animation: spin-slow 30s linear infinite;
+        }
+        .animate-spin-reverse {
+          animation: spin-reverse 25s linear infinite;
+        }
+      `}</style>
     </div>
   )
 }

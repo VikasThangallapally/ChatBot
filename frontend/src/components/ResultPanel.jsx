@@ -20,8 +20,13 @@ export default function ResultPanel({result}){
   // If no result yet, show placeholder
   if (!result || result.status === 'waiting') {
     return (
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)] shadow-neon">
-        <h4 className="text-lg font-semibold mb-4">Analysis Results</h4>
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        transition={{ duration: 0.6 }} 
+        className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 shadow-2xl"
+      >
+        <h4 className="text-lg font-semibold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Analysis Results</h4>
         <div className="text-slate-400 text-center py-8">Upload an image to see detailed analysis here</div>
       </motion.div>
     )
@@ -30,7 +35,12 @@ export default function ResultPanel({result}){
   // Handle invalid image - STRICT: Do NOT show any predictions
   if (result.status === 'invalid_image' || !result.is_valid_brain_image) {
     return (
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-red-500/30 shadow-neon">
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        transition={{ duration: 0.6 }} 
+        className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-red-500/30 shadow-2xl hover:shadow-red-500/20"
+      >
         <h4 className="text-lg font-semibold mb-4 text-red-400">❌ Not a Valid Brain MRI</h4>
         <p className="text-slate-300 mb-4 font-semibold">The uploaded file is NOT a brain MRI scan.</p>
         <p className="text-slate-400 mb-4 text-sm">{result.error || result.validation_reason || 'The image does not match brain MRI characteristics.'}</p>
@@ -71,7 +81,12 @@ export default function ResultPanel({result}){
   // Handle error
   if (result.status === 'error') {
     return (
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-red-500/20 shadow-neon">
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        transition={{ duration: 0.6 }} 
+        className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-red-500/20 shadow-2xl"
+      >
         <h4 className="text-lg font-semibold mb-4 text-red-400">⚠️ Error</h4>
         <p className="text-slate-300">{result.error || 'An error occurred during analysis'}</p>
       </motion.div>
@@ -94,8 +109,8 @@ export default function ResultPanel({result}){
     return (
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="space-y-6">
         {/* Main Prediction */}
-        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)] shadow-neon">
-          <h4 className="text-lg font-semibold mb-6">Prediction Result</h4>
+        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
+          <h4 className="text-lg font-semibold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Prediction Result</h4>
           <div className="flex items-center gap-8 mb-6">
             <div>
               <CircularProgress value={Math.round(top.confidence * 100)} color={color} />
@@ -137,8 +152,8 @@ export default function ResultPanel({result}){
         </div>
 
         {/* Medical Analysis */}
-        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(0,230,255,0.06)] shadow-neon">
-          <h4 className="text-lg font-semibold mb-4">Medical Analysis & Information</h4>
+        <div className="p-6 rounded-2xl bg-[rgba(255,255,255,0.05)] backdrop-blur-lg border border-cyan-500/20 hover:border-cyan-500/40 shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300">
+          <h4 className="text-lg font-semibold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Medical Analysis & Information</h4>
 
           {/* Description */}
           <div className="mb-6">

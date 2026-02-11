@@ -9,7 +9,6 @@ from PIL import Image
 import os
 import numpy as np
 from typing import Tuple
-import tensorflow as tf
 from app.config import settings
 from app.utils.logger import get_logger
 
