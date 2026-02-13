@@ -1,0 +1,22 @@
+services:
+  # Combined Backend API + Frontend Service (FastAPI + React)
+  - type: web
+    name: brain-tumor-detection
+    env: python
+    region: virginia
+    plan: free
+
+    # Build command: install Python deps (no cache) and build React frontend - includes python-multipart
+    buildCommand: pip install --upgrade pip setuptools && pip install --no-cache-dir -r requirements.txt && cd frontend && npm install && npm run build
+
+    # Start command: serve both API and static files
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+    # Environment variables
+    envVars:
+      - key: OPENAI_API_KEY
+        scope: build,runtime
+        sync: false
+      - key: DEBUG
+        value: false
+        

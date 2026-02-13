@@ -1,0 +1,49 @@
+<svg width="640" height="480" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skullEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7ad9" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#00e6ff" stop-opacity="0.85"/>
+    </linearGradient>
+    <radialGradient id="brainGlow" cx="45%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#c6f8ff" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#42d9ff" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0a5f7a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="neonGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M210 130 C220 85 275 55 335 68 C360 40 430 45 455 95 C500 105 525 165 505 210 C525 255 505 315 458 332 C445 372 400 400 350 388 C320 415 255 408 232 370 C185 365 158 325 175 285 C150 255 155 190 190 165 C195 145 202 135 210 130 Z" stroke="url(#skullEdge)" stroke-width="6" filter="url(#neonGlow)"/>
+
+    <path d="M250 190 C265 165 315 160 330 185 C350 162 395 170 405 205 C425 215 430 245 412 265 C420 290 395 310 365 300 C345 320 305 322 285 300 C255 302 235 275 245 250 C225 235 225 210 250 190 Z" stroke="#b9f6ff" stroke-width="2.5" opacity="0.85"/>
+
+    <path d="M260 155 C270 140 300 130 330 140" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M265 235 C285 225 320 225 345 240" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M255 285 C280 305 315 310 350 295" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M365 200 C385 210 395 230 392 248" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M315 360 C325 370 345 372 360 362" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+
+    <path d="M210 300 C225 325 235 355 235 390" stroke="#ff7ad9" stroke-width="3" opacity="0.6"/>
+    <path d="M235 390 C250 405 270 410 290 405" stroke="#ff7ad9" stroke-width="3" opacity="0.6"/>
+    <path d="M245 340 C270 350 300 352 330 345" stroke="#9beaff" stroke-width="2" opacity="0.6"/>
+  </g>
+
+  <ellipse cx="330" cy="220" rx="210" ry="175" fill="url(#brainGlow)"/>
+
+  <g stroke="#c8f7ff" stroke-width="1.2" opacity="0.35">
+    <path d="M185 215 L290 170 L420 210 L480 285"/>
+    <path d="M200 260 L310 225 L370 275 L455 250"/>
+    <path d="M215 310 L330 265 L430 330"/>
+  </g>
+
+  <g>
+    <circle cx="385" cy="165" r="16" fill="#ff7a1a" opacity="0.9"/>
+    <circle cx="385" cy="165" r="24" fill="#ffcc66" opacity="0.35"/>
+  </g>
+</svg>
