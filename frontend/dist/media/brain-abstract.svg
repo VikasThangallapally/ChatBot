@@ -1,0 +1,35 @@
+<svg width="640" height="480" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#b9f6ff" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#3ad6ff" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#0b6a8a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7ad9" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#00e6ff" stop-opacity="0.75"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M180 160 C170 95 245 60 300 68 C320 30 395 34 430 85 C470 90 510 140 498 185 C520 230 500 300 455 315 C440 360 390 390 340 375 C300 410 240 405 210 360 C160 355 135 305 150 260 C120 220 130 175 180 160 Z" stroke="url(#edge)" stroke-width="6" filter="url(#softGlow)"/>
+    <path d="M210 190 C230 150 300 145 325 175 C350 145 395 155 405 195 C430 205 440 235 420 260 C432 290 405 315 370 310 C345 330 300 330 285 305 C250 305 225 275 235 245 C210 230 205 210 210 190 Z" stroke="#b9f6ff" stroke-width="2.5" opacity="0.8"/>
+    <path d="M255 130 C260 110 300 100 330 110" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M260 230 C280 220 315 220 340 235" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M250 280 C270 300 300 310 340 300" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M360 180 C380 190 395 210 392 230" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+    <path d="M300 355 C310 365 330 368 345 360" stroke="#9beaff" stroke-width="2" opacity="0.7"/>
+  </g>
+  <ellipse cx="320" cy="230" rx="210" ry="175" fill="url(#glow)"/>
+  <g stroke="#c8f7ff" stroke-width="1.2" opacity="0.4">
+    <path d="M170 210 L280 160 L410 210 L470 290"/>
+    <path d="M190 260 L300 220 L360 270 L450 250"/>
+    <path d="M210 310 L320 260 L420 330"/>
+  </g>
+</svg>

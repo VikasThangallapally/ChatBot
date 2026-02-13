@@ -7,24 +7,32 @@ from fastapi.security import OAuth2PasswordBearer
 from app.config import settings
 from app.db import get_users_collection
 import logging
+import hashlib
+import secrets
 
 logger = logging.getLogger(__name__)
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use pbkdf2 instead of bcrypt to avoid 72-byte limit issues
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify plain password against hashed password."""
-    # Truncate password to max 72 bytes for bcrypt compatibility
-    return pwd_context.verify(plain_password[:72], hashed_password)
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception as e:
+        logger.error(f"Password verification error: {e}")
+        return False
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a plain password."""
-    # Truncate password to max 72 bytes for bcrypt compatibility
-    pwd_to_hash = password[:72]
-    return pwd_context.hash(pwd_to_hash)
+    """Hash a plain password using PBKDF2."""
+    try:
+        return pwd_context.hash(password)
+    except Exception as e:
+        logger.error(f"Password hashing error: {e}")
+        raise Exception(f"Failed to hash password: {e}")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

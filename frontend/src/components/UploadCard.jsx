@@ -39,8 +39,27 @@ export default function UploadCard(){
         window.dispatchEvent(new CustomEvent('mriUploaded', { detail: { url: previewUrl, fileName: file.name } }))
       }catch(e){ /* ignore */ }
       try{
-        window.latestPrediction = res.data
-        window.dispatchEvent(new CustomEvent('predictionUpdated', { detail: res.data }))
+        const hasValidPrediction = !!(res.data?.status === 'success' && res.data?.is_valid_brain_image && res.data?.top_prediction)
+        if (hasValidPrediction) {
+          window.latestPrediction = res.data.top_prediction
+          window.latestPredictionMeta = {
+            status: res.data.status,
+            isValid: true,
+            imagePath: res.data.image_path || null,
+            validationReason: null,
+            error: null
+          }
+        } else {
+          window.latestPrediction = null
+          window.latestPredictionMeta = {
+            status: res.data?.status || 'invalid_image',
+            isValid: false,
+            imagePath: res.data?.image_path || null,
+            validationReason: res.data?.validation_reason || null,
+            error: res.data?.error || null
+          }
+        }
+        window.dispatchEvent(new CustomEvent('predictionUpdated', { detail: window.latestPredictionMeta }))
       }catch(e){ /* ignore */ }
       setUploading(false)
     }catch(err){

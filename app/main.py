@@ -23,6 +23,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Root endpoint
+@app.get("/", tags=["Root"])
+async def root():
+    """Welcome endpoint - redirects to API documentation."""
+    return {
+        "status": "running",
+        "name": "NeuroAssist - Brain Tumor Chatbot",
+        "description": "AI-powered chatbot for brain tumor MRI image analysis and explanation",
+        "version": "1.0.0",
+        "docs_url": "/docs",
+        "redoc_url": "/redoc",
+        "health_check": "/health",
+        "message": "Welcome to NeuroAssist! Visit /docs for interactive API documentation"
+    }
+
 # Initialize MongoDB collections on startup (non-blocking)
 @app.on_event("startup")
 async def startup_event():
@@ -45,6 +60,7 @@ async def shutdown_event():
         logger.error(f"❌ Error closing MongoDB connection: {e}")
 
 # CORS middleware - configured from environment variables
+logger.info(f"🔧 Configuring CORS with origins: {settings.CORS_ORIGINS}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -52,6 +68,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logger.info(f"✅ CORS middleware configured for origins: {settings.CORS_ORIGINS}")
 
 # Include routers (BEFORE static files)
 app.include_router(predict.router, prefix="/api", tags=["Prediction"])
