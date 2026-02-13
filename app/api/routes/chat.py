@@ -1,100 +1,90 @@
 """
-Chatbot endpoint for interactive explanation generation.
-Integrates GPT-based intelligence with fallback to rule-based responses.
+Multilingual chatbot endpoint with domain restriction and safety guardrails.
+Supports Brain MRI and Brain Tumor questions only.
+Auto-detects user language and responds accordingly.
 """
 
 from fastapi import APIRouter
-from app.services.explanation import ExplanationService
-from app.services.gpt_service import get_gpt_service
 from app.schemas.chat import ChatRequest, ChatResponse
-from app.core.chatbot import Chatbot
-from app.core.disclaimer import get_disclaimer
+from app.services.multilingual_chat_service import get_chat_service
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
 
-# Initialize chatbot
-chatbot = Chatbot()
-gpt_service = get_gpt_service()
+# Initialize multilingual chat service
+chat_service = get_chat_service()
 
 
 @router.post(
     "/chat",
     response_model=ChatResponse,
-    summary="Interactive chatbot for tumor explanations",
-    description="Chat with the bot to get human-readable explanations powered by GPT"
+    summary="Multilingual Brain MRI chatbot",
+    description="Chat with the bot in your language. Supports English, Hindi, Telugu with auto-detection."
 )
 async def chat(request: ChatRequest):
     """
-    Interactive chatbot endpoint for explanations.
-    Supports GPT-based responses with fallback to rule-based chatbot.
+    Multilingual chatbot endpoint with safety guardrails.
+    
+    Features:
+    - Auto-detects user language (English, Hindi, Telugu)
+    - Domain restricted to Brain MRI and Brain Tumor topics only
+    - Emergency symptom detection
+    - Medical safety disclaimers
+    - LLM-powered responses with fallback
     
     Args:
-        request: Chat request with user message and optional MRI prediction context
+        request: Chat request with message and language
         
     Returns:
-        ChatResponse: Bot response with explanation, source, and disclaimer
+        ChatResponse: Bot response with language metadata
     """
     try:
-        # Try GPT-based response first if service is available
-        response_text = None
-        explanation = None
-        source = "fallback"
+        logger.info(f"Chat request received. Language: {request.language}, Message length: {len(request.message)}")
         
-        if gpt_service.is_available():
-            logger.info(f"GPT service available, generating response for: {request.message[:50]}...")
-            
-            # Call GPT service with prediction context
-            gpt_result = await gpt_service.generate_response(
-                user_question=request.message,
-                prediction_label=request.prediction_label,
-                confidence_score=request.confidence_score
-            )
-            
-            if gpt_result["source"] == "gpt":
-                response_text = gpt_result["reply"]
-                source = "gpt"
-                logger.info(f"GPT response generated successfully")
-            else:
-                logger.warning(f"GPT generation failed: {gpt_result.get('error', 'Unknown error')}")
-        else:
-            logger.info("GPT service not available, using fallback chatbot")
-        
-        # Fall back to rule-based chatbot if GPT failed
-        if response_text is None:
-            logger.info("Falling back to rule-based chatbot")
-            # Pass MRI data to chatbot for context-aware responses
-            mri_context = None
-            if request.prediction_label and request.confidence_score:
-                mri_context = {
-                    "tumor_type": request.prediction_label,
-                    "confidence": request.confidence_score
-                }
-            response_text = chatbot.generate_response(
-                request.message,
-                mri_data=mri_context
-            )
-            source = "fallback"
-        
-        # Generate explanation if needed
-        explanation_service = ExplanationService()
-        explanation = explanation_service.explain_response(response_text)
-        
-        logger.info(f"Chat response completed. Source: {source}, Message: {request.message[:50]}")
-        
-        return ChatResponse(
-            response=response_text,
-            explanation=explanation,
-            source=source,
-            disclaimer=get_disclaimer()
+        # Generate multilingual response
+        result = await chat_service.generate_response(
+            user_message=request.message,
+            language=request.language,
+            prediction_label=request.prediction_label,
+            confidence_score=request.confidence_score
         )
+        
+        # Build response
+        response = ChatResponse(
+            response=result["response"],
+            language=result.get("language", "en"),
+            source=result.get("source", "error"),
+            is_unrelated=result.get("is_unrelated", False),
+            is_medical_alert=result.get("is_medical_alert", False)
+        )
+        
+        logger.info(f"Chat response completed. Source: {response.source}, Language: {response.language}")
+        
+        return response
         
     except Exception as e:
-        logger.error(f"Error during chat: {str(e)}")
+        logger.error(f"Error during chat: {str(e)}", exc_info=True)
+        
+        # Determine language for error response
+        error_lang = "en"
+        try:
+            if request.language != "auto":
+                error_lang = request.language
+        except:
+            pass
+        
+        error_responses = {
+            "en": "An error occurred while processing your request. Please try again.",
+            "hi": "आपके अनुरोध को संसाधित करते समय एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+            "te": "మీ అభ్యర్థనను ప్రక్రియ చేయడంలో ఒక లోపం సంభవించింది. దయచేసి మళ్లీ ప్రయత్నించండి."
+        }
+        
         return ChatResponse(
-            response="An error occurred while processing your request. Please try again with a different question.",
-            explanation="If this error persists, please consult with a medical professional.",
+            response=error_responses.get(error_lang, error_responses["en"]),
+            language=error_lang,
             source="error",
-            disclaimer=get_disclaimer()
+            is_unrelated=False,
+            is_medical_alert=False
         )
+
